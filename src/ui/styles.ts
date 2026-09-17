@@ -118,18 +118,22 @@ export const UPLOADER_STYLES = `
     padding: 0 1.25rem 1rem 1.25rem;
     max-height: 22rem;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .jengo-file-item {
     display: flex;
     align-items: center;
     gap: 0.875rem;
-    padding: 0.75rem;
+    padding: 0.625rem 0.875rem;
     background-color: var(--jengo-surface, #f8fafc);
     border: 1px solid var(--jengo-border, #e2e8f0);
     border-radius: var(--jengo-radius-sm, 0.375rem);
     position: relative;
     overflow: hidden;
+    flex-shrink: 0;
+    min-height: 3.75rem;
+    box-sizing: border-box;
 }
 
 .jengo-file-item-thumb {
@@ -142,6 +146,102 @@ export const UPLOADER_STYLES = `
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+}
+
+.jengo-thumb-badge {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Specific Badge Theming */
+.jengo-thumb-pdf {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.jengo-thumb-video {
+    background-color: #ede9fe;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+}
+
+.jengo-thumb-audio {
+    background-color: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.jengo-thumb-archive {
+    background-color: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fef08a;
+}
+
+.jengo-thumb-code {
+    background-color: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+
+.jengo-thumb-doc {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+.jengo-thumb-default {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme="dark"] .jengo-thumb-pdf {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="dark"] .jengo-thumb-video {
+    background-color: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+[data-theme="dark"] .jengo-thumb-audio {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="dark"] .jengo-thumb-archive {
+    background-color: rgba(234, 179, 8, 0.2);
+    color: #facc15;
+    border-color: rgba(234, 179, 8, 0.3);
+}
+
+[data-theme="dark"] .jengo-thumb-code {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .jengo-thumb-doc {
+    background-color: rgba(14, 165, 233, 0.2);
+    color: #38bdf8;
+    border-color: rgba(14, 165, 233, 0.3);
+}
+
+[data-theme="dark"] .jengo-thumb-default {
+    background-color: rgba(100, 116, 139, 0.2);
+    color: #94a3b8;
+    border-color: rgba(100, 116, 139, 0.3);
 }
 
 .jengo-file-item-icon {
@@ -153,18 +253,23 @@ export const UPLOADER_STYLES = `
 .jengo-file-item-info {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 0.25rem;
     flex: 1;
     min-width: 0;
+    overflow: hidden;
 }
 
 .jengo-file-item-name {
     font-size: 0.875rem;
     font-weight: 500;
+    line-height: 1.4;
     color: var(--jengo-text, #0f172a);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .jengo-file-item-meta {
@@ -172,6 +277,7 @@ export const UPLOADER_STYLES = `
     align-items: center;
     gap: 0.625rem;
     font-size: 0.75rem;
+    line-height: 1.3;
     color: var(--jengo-text-muted, #64748b);
     flex-wrap: wrap;
 }

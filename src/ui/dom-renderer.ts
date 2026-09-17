@@ -337,24 +337,79 @@ export class DomUploaderRenderer {
         }
     }
 
+    private createThumbnailElement(item: FileQueueItem): HTMLElement {
+        const isImage = Boolean(
+            (item.mime && item.mime.startsWith('image/')) ||
+            /\.(jpe?g|png|webp|gif|svg|avif|bmp|ico)$/i.test(item.name)
+        );
+
+        if (isImage && item.previewUrl) {
+            const img = document.createElement('img');
+            img.className = 'jengo-file-item-thumb';
+            img.src = item.previewUrl;
+            img.alt = '';
+            img.loading = 'lazy';
+            img.onerror = () => {
+                const fallback = this.createFileTypeBadge(item);
+                img.replaceWith(fallback);
+            };
+            return img;
+        }
+
+        return this.createFileTypeBadge(item);
+    }
+
+    private createFileTypeBadge(item: FileQueueItem): HTMLElement {
+        const thumb = document.createElement('div');
+        const ext = (item.name.split('.').pop() || 'FILE').toUpperCase().slice(0, 4);
+        const mime = (item.mime || '').toLowerCase();
+        const extLower = (item.name.split('.').pop() || '').toLowerCase();
+
+        let category = 'default';
+        let label = ext;
+
+        if (mime === 'application/pdf' || extLower === 'pdf') {
+            category = 'pdf';
+            label = 'PDF';
+        } else if (mime.startsWith('video/') || ['mp4', 'mkv', 'mov', 'webm', 'avi'].includes(extLower)) {
+            category = 'video';
+            label = 'VID';
+        } else if (mime.startsWith('audio/') || ['mp3', 'wav', 'ogg', 'flac', 'm4a'].includes(extLower)) {
+            category = 'audio';
+            label = 'AUD';
+        } else if (['zip', 'rar', '7z', 'tar', 'gz', 'bz2'].includes(extLower)) {
+            category = 'archive';
+            label = 'ZIP';
+        } else if (['js', 'ts', 'php', 'py', 'json', 'html', 'css', 'sql', 'xml', 'csv'].includes(extLower)) {
+            category = 'code';
+            label = ext || 'CODE';
+        } else if (['doc', 'docx', 'odt', 'rtf', 'txt', 'md'].includes(extLower)) {
+            category = 'doc';
+            label = ext || 'DOC';
+        } else if (['xls', 'xlsx', 'ods'].includes(extLower)) {
+            category = 'doc';
+            label = 'XLS';
+        } else if (['ppt', 'pptx', 'odp'].includes(extLower)) {
+            category = 'doc';
+            label = 'PPT';
+        }
+
+        thumb.className = `jengo-file-item-thumb jengo-thumb-${category}`;
+        const badgeSpan = document.createElement('span');
+        badgeSpan.className = 'jengo-thumb-badge';
+        badgeSpan.textContent = label;
+        thumb.appendChild(badgeSpan);
+
+        return thumb;
+    }
+
     private createFileItemElement(item: FileQueueItem): HTMLElement {
         const el = document.createElement('div');
         el.className = 'jengo-file-item';
 
         // Thumbnail / Icon
         if (this.options.showThumbnails !== false) {
-            if (item.previewUrl) {
-                const img = document.createElement('img');
-                img.className = 'jengo-file-item-thumb';
-                img.src = item.previewUrl;
-                img.alt = item.name;
-                el.appendChild(img);
-            } else {
-                const iconBox = document.createElement('div');
-                iconBox.className = 'jengo-file-item-thumb';
-                iconBox.innerHTML = ICONS.file;
-                el.appendChild(iconBox);
-            }
+            el.appendChild(this.createThumbnailElement(item));
         }
 
         // Info container
@@ -364,6 +419,7 @@ export class DomUploaderRenderer {
         const nameRow = document.createElement('div');
         nameRow.className = 'jengo-file-item-name';
         nameRow.textContent = item.name;
+        nameRow.title = item.name;
         info.appendChild(nameRow);
 
         const metaRow = document.createElement('div');
