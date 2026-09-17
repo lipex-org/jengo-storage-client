@@ -125,14 +125,13 @@ export const UPLOADER_STYLES = `
     display: flex;
     align-items: center;
     gap: 0.875rem;
-    padding: 0.625rem 0.875rem;
+    padding: 0.75rem 1rem;
     background-color: var(--jengo-surface, #f8fafc);
     border: 1px solid var(--jengo-border, #e2e8f0);
     border-radius: var(--jengo-radius-sm, 0.375rem);
     position: relative;
-    overflow: hidden;
     flex-shrink: 0;
-    min-height: 3.75rem;
+    min-height: 4.25rem;
     box-sizing: border-box;
 }
 
@@ -202,6 +201,12 @@ export const UPLOADER_STYLES = `
     border: 1px solid #e2e8f0;
 }
 
+.jengo-thumb-image {
+    background-color: #ede9fe;
+    color: #5b21b6;
+    border: 1px solid #ddd6fe;
+}
+
 [data-theme="dark"] .jengo-thumb-pdf {
     background-color: rgba(239, 68, 68, 0.2);
     color: #f87171;
@@ -238,6 +243,12 @@ export const UPLOADER_STYLES = `
     border-color: rgba(14, 165, 233, 0.3);
 }
 
+[data-theme="dark"] .jengo-thumb-image {
+    background-color: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
 [data-theme="dark"] .jengo-thumb-default {
     background-color: rgba(100, 116, 139, 0.2);
     color: #94a3b8;
@@ -257,19 +268,19 @@ export const UPLOADER_STYLES = `
     gap: 0.25rem;
     flex: 1;
     min-width: 0;
-    overflow: hidden;
 }
 
 .jengo-file-item-name {
     font-size: 0.875rem;
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.5;
     color: var(--jengo-text, #0f172a);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding-top: 2px;
     padding-bottom: 2px;
+    display: block;
 }
 
 .jengo-file-item-meta {
@@ -277,7 +288,7 @@ export const UPLOADER_STYLES = `
     align-items: center;
     gap: 0.625rem;
     font-size: 0.75rem;
-    line-height: 1.3;
+    line-height: 1.4;
     color: var(--jengo-text-muted, #64748b);
     flex-wrap: wrap;
 }

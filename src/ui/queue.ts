@@ -110,9 +110,22 @@ export class UploadQueueManager {
                 },
             };
 
-            // Generate thumbnail asynchronously
+            // Generate image preview URL immediately for instant thumbnail rendering
+            if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+                const ext = (file.name.split('.').pop() || '').toLowerCase();
+                const isImg = (file.type && file.type.startsWith('image/')) ||
+                    ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'avif', 'bmp', 'ico'].includes(ext);
+
+                if (isImg) {
+                    try {
+                        item.previewUrl = URL.createObjectURL(file);
+                    } catch {}
+                }
+            }
+
+            // Extract additional preview metadata (dimensions, duration) asynchronously
             createFilePreview(file).then((preview) => {
-                if (preview.url) {
+                if (preview.url && !item.previewUrl) {
                     item.previewUrl = preview.url;
                     this.emit();
                 }

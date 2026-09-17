@@ -22,10 +22,11 @@ export async function createFilePreview(file: File | Blob): Promise<FilePreview>
     const size = file.size;
     const sizeFormatted = formatBytes(size);
 
-    const isImage = mime.startsWith('image/');
-    const isVideo = mime.startsWith('video/');
-    const isAudio = mime.startsWith('audio/');
-    const isPdf = mime === 'application/pdf';
+    const ext = name.includes('.') ? name.split('.').pop()!.toLowerCase() : '';
+    const isImage = mime.startsWith('image/') || ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'avif', 'bmp', 'ico'].includes(ext);
+    const isVideo = mime.startsWith('video/') || ['mp4', 'mov', 'webm', 'avi', 'mkv'].includes(ext);
+    const isAudio = mime.startsWith('audio/') || ['mp3', 'wav', 'ogg', 'flac', 'm4a'].includes(ext);
+    const isPdf = mime === 'application/pdf' || ext === 'pdf';
 
     let objectUrl: string | null = null;
     const isBrowser = typeof window !== 'undefined' && typeof URL !== 'undefined';

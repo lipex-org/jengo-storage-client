@@ -371,6 +371,9 @@ export class DomUploaderRenderer {
         if (mime === 'application/pdf' || extLower === 'pdf') {
             category = 'pdf';
             label = 'PDF';
+        } else if (mime.startsWith('image/') || ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'avif', 'bmp', 'ico'].includes(extLower)) {
+            category = 'image';
+            label = (extLower || 'IMG').toUpperCase().slice(0, 4);
         } else if (mime.startsWith('video/') || ['mp4', 'mkv', 'mov', 'webm', 'avi'].includes(extLower)) {
             category = 'video';
             label = 'VID';
