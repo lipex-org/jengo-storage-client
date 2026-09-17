@@ -275,6 +275,200 @@ function handleStart() {
 
 ---
 
+## Universal Upload UI Component
+
+`@jengo/storage` includes an all-in-one, highly customizable upload component with full support for Vanilla HTML/JS, React, Vue 3, and Svelte.
+
+### Features
+- **Zero-Dependency Styling**: Ships with clean, embedded scoped CSS.
+- **Theme Manipulation**: 5 built-in theme presets (`light`, `dark`, `minimal`, `corporate`, `glass`) plus custom CSS variables.
+- **Multiple Layout Variants**: `dropzone` (full card with drag-and-drop), `compact` (single row), `minimal` (sleek borders, no shadows), and `button` (trigger button).
+- **Modal or Inline**: Render inline anywhere in your UI or as a modal dialog (`modal: true` or `<UploadModal />`).
+- **Single & Multiple Uploads**: Toggle `multiple: true` or `multiple: false`. In multi-file mode, files are queued, managed, and uploaded concurrently.
+- **Automatic Chunking**: Automatically slices files larger than 5 MB into concurrent chunks; standard files are uploaded via multipart streams.
+- **Queue Controls**: Previews, speed meters, ETA, pause/resume, cancel, retry, and remove buttons per item.
+- **Granular Developer Control**: Toggle any section (`showDropzone`, `showFileList`, `showProgress`, `showDetails`, `showThumbnails`, `allowPause`, `allowCancel`) or supply custom render hooks (`renderDropzone`, `renderFileItem`, `renderHeader`, `renderFooter`).
+
+---
+
+### 1. Vanilla HTML & Web Component (`<jengo-uploader>`)
+
+```html
+<script type="module">
+  import { registerJengoUploader } from '@jengo/storage';
+  registerJengoUploader();
+</script>
+
+<!-- Render inline -->
+<jengo-uploader
+  disk="public"
+  folder="documents"
+  theme="corporate"
+  variant="dropzone"
+  multiple="true"
+></jengo-uploader>
+
+<!-- Or as an imperative DOM component -->
+<div id="uploaderContainer"></div>
+<script type="module">
+  import { createUploaderUI } from '@jengo/storage';
+
+  const uploader = createUploaderUI('#uploaderContainer', {
+    disk: 'public',
+    theme: 'dark',
+    multiple: true,
+    autoUpload: true,
+    onComplete: (results) => console.log('Finished:', results),
+  });
+</script>
+```
+
+---
+
+### 2. React / Next.js (`<JengoUploader />` & `<UploadModal />`)
+
+```tsx
+import { useState } from 'react';
+import { JengoUploader, UploadModal } from '@jengo/storage/react';
+
+export function DocumentManager() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  return (
+    <div>
+      {/* Inline Dropzone with custom theme variables */}
+      <JengoUploader
+        disk="public"
+        folder="projects"
+        theme="minimal"
+        variant="dropzone"
+        multiple={true}
+        themeVariables={{
+          primary: '#4f46e5',
+          radius: '0.5rem',
+        }}
+        onComplete={(results) => console.log('Uploaded files:', results)}
+      />
+
+      {/* Standalone Modal Uploader */}
+      <button onClick={() => setIsModalOpen(true)}>Open Upload Modal</button>
+
+      <UploadModal
+        isOpen={isModalOpen}
+        disk="public"
+        theme="glass"
+        modalTitle="Attach Media"
+        onClose={() => setIsModalOpen(false)}
+        onComplete={(results) => {
+          console.log('Saved:', results);
+          setIsModalOpen(false);
+        }}
+      />
+    </div>
+  );
+}
+```
+
+---
+
+### 3. Vue 3 (`<JengoUploader />` & `<UploadModal />`)
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import { JengoUploader, UploadModal } from '@jengo/storage/vue';
+
+const isModalOpen = ref(false);
+
+function handleComplete(results) {
+  console.log('Uploads complete:', results);
+}
+</script>
+
+<template>
+  <!-- Inline Compact variant -->
+  <JengoUploader
+    disk="public"
+    folder="profiles"
+    variant="compact"
+    theme="dark"
+    :multiple="false"
+    @complete="handleComplete"
+  />
+
+  <!-- Modal Dialog -->
+  <button @click="isModalOpen = true">Upload Files</button>
+  <UploadModal
+    :is-open="isModalOpen"
+    disk="public"
+    theme="corporate"
+    @close="isModalOpen = false"
+    @complete="handleComplete"
+  />
+</template>
+```
+
+---
+
+### 4. Svelte (Svelte 4 & 5 Action `use:uploader`)
+
+```svelte
+<script>
+  import { uploader } from '@jengo/storage/svelte';
+
+  let uploaderOptions = {
+    disk: 'public',
+    folder: 'gallery',
+    theme: 'light',
+    variant: 'dropzone',
+    multiple: true,
+    onComplete: (results) => console.log('Uploaded:', results),
+  };
+</script>
+
+<!-- Attach directly to any DOM element via Svelte action -->
+<div use:uploader={uploaderOptions} />
+```
+
+---
+
+### Complete Customization Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `disk` | `string` | `'public'` | Target filesystem disk. |
+| `folder` | `string` | `'uploads'` | Subfolder on destination disk. |
+| `theme` | `'light' \| 'dark' \| 'minimal' \| 'corporate' \| 'glass' \| 'custom'` | `'light'` | Preset theme appearance. |
+| `themeVariables` | `Record<string, string>` | `undefined` | Custom CSS variable overrides (e.g. `{ primary: '#0066cc', radius: '4px' }`). |
+| `variant` | `'dropzone' \| 'compact' \| 'minimal' \| 'button'` | `'dropzone'` | Layout presentation mode. |
+| `modal` | `boolean` | `false` | Whether to render inside a backdrop overlay modal. |
+| `modalTitle` | `string` | `'Upload Files'` | Dialog title when in modal mode. |
+| `multiple` | `boolean` | `true` | Allow selecting/dropping multiple files vs single file. |
+| `autoUpload` | `boolean` | `true` | Immediately start upload on file selection. |
+| `chunked` | `boolean \| 'auto'` | `'auto'` | Automatic chunking for files above `chunkThreshold`. |
+| `chunkThreshold`| `number` | `5242880` (5 MB) | Threshold in bytes to trigger chunking. |
+| `chunkSize` | `number` | `2097152` (2 MB) | Byte size per chunk. |
+| `concurrency` | `number` | `2` | Number of simultaneous file uploads. |
+| `maxFiles` | `number` | `undefined` | Maximum allowed files in queue. |
+| `maxFileSize` | `number` | `undefined` | Maximum allowed file size in bytes. |
+| `allowedTypes` | `string[]` | `undefined` | Allowed MIME types or file extensions (e.g. `['image/*', '.pdf']`). |
+| `showDropzone` | `boolean` | `true` | Show drag-and-drop zone. |
+| `showFileList` | `boolean` | `true` | Show queued/uploaded file items list. |
+| `showProgress` | `boolean` | `true` | Show progress indicators. |
+| `showDetails` | `boolean` | `true` | Show transfer rate and ETA metrics. |
+| `showThumbnails`| `boolean` | `true` | Show client-generated image/file thumbnails. |
+| `allowPause` | `boolean` | `true` | Allow pausing active chunked transfers. |
+| `allowCancel` | `boolean` | `true` | Allow canceling uploads. |
+| `allowRemove` | `boolean` | `true` | Allow removing items from queue. |
+| `labels` | `Partial<UploaderLabels>` | `DEFAULT_LABELS` | Internationalization labels. |
+| `renderDropzone`| `(ctx) => HTMLElement \| string` | `undefined` | Custom renderer for dropzone. |
+| `renderFileItem`| `(item, ctx) => HTMLElement \| string` | `undefined` | Custom renderer for queue items. |
+| `renderHeader` | `(ctx) => HTMLElement \| string` | `undefined` | Custom renderer for component header. |
+| `renderFooter` | `(ctx) => HTMLElement \| string` | `undefined` | Custom renderer for component footer. |
+
+
+---
+
 ## Direct Cloud Transfers
 
 When uploading directly to Amazon S3, Cloudflare R2, or Google Cloud Storage via presigned URLs:

@@ -34,6 +34,10 @@
     "./svelte": {
       "types": "./dist/svelte/index.d.ts",
       "import": "./dist/svelte/index.js"
+    },
+    "./ui": {
+      "types": "./dist/ui/index.d.ts",
+      "import": "./dist/ui/index.js"
     }
   },
   "files": [

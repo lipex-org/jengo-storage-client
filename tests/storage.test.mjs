@@ -172,3 +172,101 @@ test('Convenience upload shortcuts exist and instantiate proper uploaders', () =
     assert.equal(typeof uploadStandard, 'function');
     assert.equal(typeof uploadDirectCloud, 'function');
 });
+
+test('Universal UI module exports classes, factory, and theme presets', async () => {
+    const UI = await import('../dist/ui/index.js');
+    assert.equal(typeof UI.JengoUploaderUI, 'function');
+    assert.equal(typeof UI.createUploaderUI, 'function');
+    assert.equal(typeof UI.UploadQueueManager, 'function');
+    assert.equal(typeof UI.resolveThemeVariables, 'function');
+    assert.equal(typeof UI.registerJengoUploader, 'function');
+    assert.ok(UI.THEME_PRESETS.light);
+    assert.ok(UI.THEME_PRESETS.dark);
+    assert.ok(UI.THEME_PRESETS.minimal);
+    assert.ok(UI.THEME_PRESETS.corporate);
+    assert.ok(UI.THEME_PRESETS.glass);
+});
+
+test('Theme resolver maps presets and custom overrides', async () => {
+    const { resolveThemeVariables } = await import('../dist/ui/index.js');
+    const lightTheme = resolveThemeVariables('light');
+    assert.equal(lightTheme['--jengo-primary'], '#2563eb');
+    assert.equal(lightTheme['--jengo-bg'], '#ffffff');
+
+    const darkTheme = resolveThemeVariables('dark');
+    assert.equal(darkTheme['--jengo-bg'], '#0f172a');
+
+    const customTheme = resolveThemeVariables('minimal', {
+        primary: '#ff5500',
+        '--jengo-radius': '0px',
+    });
+    assert.equal(customTheme['--jengo-primary'], '#ff5500');
+    assert.equal(customTheme['--jengo-radius'], '0px');
+});
+
+test('UploadQueueManager handles multi-file queue and progress aggregation', async () => {
+    const { UploadQueueManager } = await import('../dist/ui/index.js');
+    const queue = new UploadQueueManager({
+        multiple: true,
+        autoUpload: false,
+        maxFiles: 5,
+        maxFileSize: 10 * 1024 * 1024,
+    });
+
+    const file1 = new File(['Hello World 1'], 'file1.txt', { type: 'text/plain' });
+    const file2 = new File(['Hello World 2222'], 'file2.txt', { type: 'text/plain' });
+
+    await queue.addFiles([file1, file2]);
+    assert.equal(queue.getItems().length, 2);
+
+    const overall = queue.getOverallProgress();
+    assert.equal(overall.totalChunks, 2);
+    assert.equal(overall.total, file1.size + file2.size);
+
+    // Cancel item 0
+    const items = queue.getItems();
+    queue.cancelItem(items[0].id);
+    assert.equal(queue.getItems()[0].status, 'canceled');
+
+    // Remove item 1
+    queue.removeItem(items[1].id);
+    assert.equal(queue.getItems().length, 1);
+
+    // Clear all
+    queue.clearAll();
+    assert.equal(queue.getItems().length, 0);
+});
+
+test('UploadQueueManager single file mode replaces previous file', async () => {
+    const { UploadQueueManager } = await import('../dist/ui/index.js');
+    const queue = new UploadQueueManager({
+        multiple: false,
+        autoUpload: false,
+    });
+
+    const file1 = new File(['Doc 1'], 'doc1.pdf', { type: 'application/pdf' });
+    const file2 = new File(['Doc 2'], 'doc2.pdf', { type: 'application/pdf' });
+
+    await queue.addFiles([file1]);
+    assert.equal(queue.getItems().length, 1);
+    assert.equal(queue.getItems()[0].name, 'doc1.pdf');
+
+    await queue.addFiles([file2]);
+    assert.equal(queue.getItems().length, 1);
+    assert.equal(queue.getItems()[0].name, 'doc2.pdf');
+});
+
+test('Universal framework components are exported properly', () => {
+    // React exports
+    assert.ok(ReactAdapter.JengoUploader);
+    assert.ok(ReactAdapter.UploadModal);
+
+    // Vue exports
+    assert.ok(VueAdapter.JengoUploader);
+    assert.ok(VueAdapter.UploadModal);
+
+    // Svelte exports
+    assert.equal(typeof SvelteAdapter.uploader, 'function');
+    assert.equal(typeof SvelteAdapter.createSvelteUploader, 'function');
+});
+

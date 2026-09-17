@@ -5,6 +5,7 @@ export * from './preview.js';
 export * from './chunker.js';
 export * from './uploader.js';
 export * from './direct-cloud.js';
+export * from './ui/index.js';
 
 import { ChunkedUploadOptions, StandardUploadOptions, UploadResult } from './types.js';
 import { ChunkedUploader, StandardUploader } from './uploader.js';

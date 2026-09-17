@@ -215,3 +215,7 @@ export function useChunkedUpload(defaultOptions: ChunkedUploadOptions = {}): Use
         reset,
     };
 }
+
+export * from './JengoUploader.js';
+export * from '../ui/types.js';
+

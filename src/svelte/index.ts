@@ -236,3 +236,7 @@ export function createChunkedUpload(defaultOptions: ChunkedUploadOptions = {}): 
 
 export const useUpload = createUpload;
 export const useChunkedUpload = createChunkedUpload;
+
+export * from './uploader.js';
+export * from '../ui/types.js';
+

@@ -16,9 +16,10 @@ import { resolveCsrfToken } from './support/csrf.js';
 export class ChunkedUploader {
     public readonly file: File | Blob;
     public readonly uuid: string;
-    public readonly options: Required<Omit<ChunkedUploadOptions, 'metadata' | 'headers'>> & {
+    public readonly options: Required<Omit<ChunkedUploadOptions, 'metadata' | 'headers' | 'csrfToken'>> & {
         headers?: Record<string, string> | (() => Record<string, string>);
         metadata?: Record<string, unknown>;
+        csrfToken?: string;
     };
 
     private status: UploadStatus = 'idle';
@@ -46,6 +47,7 @@ export class ChunkedUploader {
             folder: options.folder ?? 'uploads',
             computeChecksums: options.computeChecksums ?? false,
             headers: options.headers,
+            csrfToken: options.csrfToken,
             metadata: options.metadata,
             onProgress: options.onProgress ?? (() => {}),
             onSuccess: options.onSuccess ?? (() => {}),
@@ -277,7 +279,7 @@ export class ChunkedUploader {
             xhr.setRequestHeader(key, val);
         }
 
-        const csrfToken = resolveCsrfToken();
+        const csrfToken = this.options.csrfToken || resolveCsrfToken();
         if (csrfToken) {
             xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -340,7 +342,7 @@ export class ChunkedUploader {
                 metadata: this.options.metadata,
             };
 
-            const csrfToken = resolveCsrfToken();
+            const csrfToken = this.options.csrfToken || resolveCsrfToken();
             const headers: Record<string, string> = {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -411,9 +413,10 @@ export class ChunkedUploader {
  */
 export class StandardUploader {
     public readonly file: File | Blob;
-    public readonly options: Required<Omit<StandardUploadOptions, 'headers' | 'extraData'>> & {
+    public readonly options: Required<Omit<StandardUploadOptions, 'headers' | 'extraData' | 'csrfToken'>> & {
         headers?: Record<string, string> | (() => Record<string, string>);
         extraData?: Record<string, string | Blob>;
+        csrfToken?: string;
     };
 
     private status: UploadStatus = 'idle';
@@ -429,6 +432,7 @@ export class StandardUploader {
             disk: options.disk ?? 'public',
             folder: options.folder ?? 'uploads',
             headers: options.headers,
+            csrfToken: options.csrfToken,
             extraData: options.extraData,
             onProgress: options.onProgress ?? (() => {}),
             onSuccess: options.onSuccess ?? (() => {}),
@@ -548,7 +552,7 @@ export class StandardUploader {
                 xhr.setRequestHeader(key, val);
             }
 
-            const csrfToken = resolveCsrfToken();
+            const csrfToken = this.options.csrfToken || resolveCsrfToken();
             if (csrfToken) {
                 xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');

@@ -49,6 +49,7 @@ export interface ChunkedUploadOptions {
     disk?: string;
     folder?: string;
     headers?: Record<string, string> | (() => Record<string, string>);
+    csrfToken?: string;
     metadata?: Record<string, unknown>;
     computeChecksums?: boolean;
     onProgress?: (progress: UploadProgress) => void;
@@ -63,6 +64,7 @@ export interface StandardUploadOptions {
     disk?: string;
     folder?: string;
     headers?: Record<string, string> | (() => Record<string, string>);
+    csrfToken?: string;
     extraData?: Record<string, string | Blob>;
     onProgress?: (progress: UploadProgress) => void;
     onSuccess?: (result: UploadResult) => void;
