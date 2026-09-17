@@ -1,0 +1,88 @@
+{
+  "name": "@jengo/storage",
+  "version": "1.0.0",
+  "description": "Universal client library for Jengo Storage featuring chunked uploads, resumability, direct-to-cloud S3/R2 transfers, and framework adapters.",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lipex-org/jengo-storage-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lipex-org/jengo-storage-client/issues"
+  },
+  "homepage": "https://jengo.dev",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
+    },
+    "./vue": {
+      "types": "./dist/vue/index.d.ts",
+      "import": "./dist/vue/index.js"
+    },
+    "./svelte": {
+      "types": "./dist/svelte/index.d.ts",
+      "import": "./dist/svelte/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test tests/storage.test.mjs",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run build && npm run test",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "jengo",
+    "storage",
+    "upload",
+    "chunking",
+    "resumable",
+    "s3",
+    "r2",
+    "codeigniter4",
+    "flysystem"
+  ],
+  "author": "Ian Otieno",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "vue": ">=3.0.0",
+    "svelte": ">=4.0.0 || >=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "svelte": "^5.57.0",
+    "typescript": "^5.7.0",
+    "vue": "^3.5.0"
+  }
+}
