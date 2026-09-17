@@ -1,6 +1,6 @@
 {
   "name": "@jengo/storage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Universal client library for Jengo Storage featuring chunked uploads, resumability, direct-to-cloud S3/R2 transfers, and framework adapters.",
   "type": "module",
   "main": "dist/index.js",
