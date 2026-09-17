@@ -20,16 +20,26 @@ export async function calculateSha256(data: Blob | ArrayBuffer): Promise<string>
         return '';
     }
 
-    let buffer: ArrayBuffer;
-    if (data instanceof Blob) {
-        buffer = await data.arrayBuffer();
-    } else {
-        buffer = data;
+    // Browsers cannot safely allocate contiguous ArrayBuffers for multi-gigabyte files.
+    // Return empty string for files > 500 MB; the server will compute the final hash via stream.
+    if (data instanceof Blob && data.size > 500 * 1024 * 1024) {
+        return '';
     }
 
-    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    try {
+        let buffer: ArrayBuffer;
+        if (data instanceof Blob) {
+            buffer = await data.arrayBuffer();
+        } else {
+            buffer = data;
+        }
+
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch {
+        return '';
+    }
 }
 
 /**
