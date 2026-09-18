@@ -1,0 +1,43 @@
+{
+  "name": "@jengo/storage",
+  "description": "Universal TypeScript/JavaScript client library for Jengo Storage featuring chunked uploads, resumability, direct-to-cloud S3/R2 transfers, image preview generation, dropzone UI, and React/Vue/Svelte framework adapters.",
+  "version": "1.0.1",
+  "functions": [
+    {
+      "name": "uploadChunked",
+      "signature": "uploadChunked(file: File | Blob, options?: ChunkedUploadOptions): Promise<UploadResult>",
+      "description": "Upload a file in chunks to /storage/upload/chunk with progress, pause, resume, and retry."
+    },
+    {
+      "name": "uploadStandard",
+      "signature": "uploadStandard(file: File | Blob, options?: StandardUploadOptions): Promise<UploadResult>",
+      "description": "Upload a file via a standard single HTTP POST request."
+    },
+    {
+      "name": "uploadDirectCloud",
+      "signature": "uploadDirectCloud(file: File | Blob, options?: DirectCloudUploadOptions): Promise<UploadResult>",
+      "description": "Upload directly to S3 or Cloudflare R2 using a presigned upload URL."
+    },
+    {
+      "name": "generatePreview",
+      "signature": "generatePreview(file: File, options?: PreviewOptions): Promise<string>",
+      "description": "Generate an in-browser thumbnail or preview data URL for an image or PDF."
+    }
+  ],
+  "uploaders": [
+    {
+      "class": "ChunkedUploader",
+      "description": "Manages chunk slicing, concurrent dispatch, progress callbacks, and completion notification."
+    },
+    {
+      "class": "DirectCloudUploader",
+      "description": "Coordinates presigned URL requests with direct S3/R2 binary PUT streaming."
+    }
+  ],
+  "frameworks": {
+    "react": "import { useUpload, useDropzone } from '@jengo/storage/react';",
+    "vue": "import { useUpload, useDropzone } from '@jengo/storage/vue';",
+    "svelte": "import { createUploadStore } from '@jengo/storage/svelte';",
+    "ui": "import { createDropzone } from '@jengo/storage/ui';"
+  }
+}
